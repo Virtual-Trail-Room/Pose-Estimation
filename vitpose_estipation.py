@@ -1,20 +1,11 @@
 import torch
-import requests
 import numpy as np
-
 from PIL import Image
-
 from transformers import AutoProcessor, RTDetrForObjectDetection, VitPoseForPoseEstimation
-
-import math
 import cv2
-
 from vitpose_helper import *
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-url = "https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&height=900&width=1600&fit=bounds"
-image = Image.open(requests.get(url, stream=True).raw)
 
 person_image_processor = AutoProcessor.from_pretrained("PekingU/rtdetr_r50vd_coco_o365")
 person_model = RTDetrForObjectDetection.from_pretrained("PekingU/rtdetr_r50vd_coco_o365", device_map=device)
@@ -23,8 +14,6 @@ image_processor = AutoProcessor.from_pretrained("usyd-community/vitpose-base-sim
 model = VitPoseForPoseEstimation.from_pretrained("usyd-community/vitpose-base-simple", device_map=device)
 
 keypoint_edges = model.config.edges
-
-numpy_image = np.array(image)
 
 cap = cv2.VideoCapture(0)
 
@@ -35,8 +24,6 @@ while cap.isOpened():
 
     image = Image.fromarray(cv_image_rgb)
 
-    # image.show()
-
     try: 
         person_boxes = detect_human(image, person_image_processor, person_model, device)
         image_pose_result = detect_keypoints(image, person_boxes, image_processor, model, device)
@@ -44,10 +31,7 @@ while cap.isOpened():
         for pose_result in image_pose_result:
             scores = np.array(pose_result["scores"])
             keypoints = np.array(pose_result["keypoints"])
-            # draw each point on image
             draw_points(frame, keypoints, scores, keypoint_colors, keypoint_score_threshold=0.3, radius=4, show_keypoint_weight=False)
-
-            # draw links
             draw_links(frame, keypoints, scores, keypoint_edges, link_colors, keypoint_score_threshold=0.3, thickness=1, show_keypoint_weight=False)
 
         cv2.imshow("pose estimation", frame)
@@ -56,8 +40,5 @@ while cap.isOpened():
     
     except:
         print("no person found")
-
-    # opencv_img = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)        
-    # opencv_img = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
 
 cv2.destroyAllWindows()
