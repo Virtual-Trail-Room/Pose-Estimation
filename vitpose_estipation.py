@@ -13,7 +13,7 @@ from vitpose_helper import *
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-url = "https://media.istockphoto.com/id/1132930261/photo/full-length-body-size-side-profile-photo-jumping-high-beautiful-she-her-lady-hands-arms-up.jpg?s=612x612&w=0&k=20&c=n37aQSwx8IoEN7GX1iaf2y0-MskBRHtz2VxceScpBjE="
+url = "https://imageio.forbes.com/specials-images/imageserve/5d35eacaf1176b0008974b54/0x0.jpg?format=jpg&crop=4560,2565,x790,y784,safe&height=900&width=1600&fit=bounds"
 image = Image.open(requests.get(url, stream=True).raw)
 
 person_image_processor = AutoProcessor.from_pretrained("PekingU/rtdetr_r50vd_coco_o365")
@@ -24,23 +24,40 @@ model = VitPoseForPoseEstimation.from_pretrained("usyd-community/vitpose-base-si
 
 keypoint_edges = model.config.edges
 
-
 numpy_image = np.array(image)
-person_boxes = detect_human(image, person_image_processor, person_model, device)
-image_pose_result = detect_keypoints(image, person_boxes, image_processor, model, device)
 
-for pose_result in image_pose_result:
-    scores = np.array(pose_result["scores"])
-    keypoints = np.array(pose_result["keypoints"])
+cap = cv2.VideoCapture(0)
 
-    # draw each point on image
-    draw_points(numpy_image, keypoints, scores, keypoint_colors, keypoint_score_threshold=0.3, radius=4, show_keypoint_weight=False)
+while cap.isOpened():
+    ret, frame = cap.read()
 
-    # draw links
-    draw_links(numpy_image, keypoints, scores, keypoint_edges, link_colors, keypoint_score_threshold=0.3, thickness=1, show_keypoint_weight=False)
+    cv_image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-opencv_img = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+    image = Image.fromarray(cv_image_rgb)
 
-cv2.imshow("pose estimation", opencv_img)
-cv2.waitKey(0)
+    # image.show()
+
+    try: 
+        person_boxes = detect_human(image, person_image_processor, person_model, device)
+        image_pose_result = detect_keypoints(image, person_boxes, image_processor, model, device)
+
+        for pose_result in image_pose_result:
+            scores = np.array(pose_result["scores"])
+            keypoints = np.array(pose_result["keypoints"])
+            # draw each point on image
+            draw_points(frame, keypoints, scores, keypoint_colors, keypoint_score_threshold=0.3, radius=4, show_keypoint_weight=False)
+
+            # draw links
+            draw_links(frame, keypoints, scores, keypoint_edges, link_colors, keypoint_score_threshold=0.3, thickness=1, show_keypoint_weight=False)
+
+        cv2.imshow("pose estimation", frame)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
+            break
+    
+    except:
+        print("no person found")
+
+    # opencv_img = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)        
+    # opencv_img = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+
 cv2.destroyAllWindows()
