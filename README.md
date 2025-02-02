@@ -1,14 +1,41 @@
-Openpose light weight: https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch?tab=readme-ov-file
+# Set up:
 
-Use openpose light weight because open pose doesn't seem to want to compile on mac... also we will need a lightweight application in any case. Still fairly slow on macbook though.
+Set up environment (I use venv but anaconda should work as well)
+```
+$ python -m venv .venv
+$ source .venv/bin/activate
+```
+Make sure to also change your python interpreter
 
-To run: python demo.py --checkpoint-path checkpoint_iter_370000.pth --video 0
+Then download all necessary libraries:
+```
+$ pip install -r requirements .txt
+```
 
-pretrained model: https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth
+# [Openpose Light weight](https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch?tab=readme-ov-file )
 
-Vitpose: https://huggingface.co/docs/transformers/main/en/model_doc/vitpose
+Use openpose light weight because open pose base code is poorly maintained; as result most of the repo is very unusuable. Results are very slow and frames appear to be chopped on Mac.
 
-Use the huggingface version as it is easier to use. 
+The pretrained model has been included in the repo already, but you can download it here as well: [pretrained model](https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth)
 
-Mediapipe: https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker
-Very optimized on CPU, not as accurate
+To run: 
+```
+$ cd openpose
+$ python demo.py --checkpoint-path checkpoint_iter_370000.pth --video 0
+```
+
+
+# [Vitpose](https://huggingface.co/docs/transformers/main/en/model_doc/vitpose)
+
+Hugging face provides a well maintained version model that is accessible through their `transformers` api, which is used in this code.
+
+Provides very accurate pose estimation, however it doesn't handle cpu only support too well. Results are very slow and frames appear to be chopped on Mac. 
+
+Run this `vitpose/vitpose_estimation.py` the way you would run a standard python.
+
+# [Mediapipe](https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker)
+
+Downloaded directly from MediaPipe API. Provides very fast cpu support, but a little less accurate.
+
+Run this `Mediapipe/mp_pose_estimation.py` the way you would run a standard python.
+
