@@ -7,3 +7,4 @@ pillow
 transformers
 torchvision
 pycocotools
+ultralytics
