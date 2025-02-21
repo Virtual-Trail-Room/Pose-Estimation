@@ -13,7 +13,7 @@ $ pip install -r requirements .txt
 ```
 
 # Model Comparisons
-All the models are great at rendering video frame by frame when provided the prerecorded video as it can go frame by frame with no lag in final output. However, calculating landmarks and outputing a smooth image is much harder as the models need computing time. Table is made to help to compare model performances and other stats in real time application:
+All the models are great at rendering video frame by frame when provided the prerecorded video as it can go frame by frame with no lag in final output. However, calculating landmarks and outputing a smooth image for real time use is much harder as the models need computing time. Table is made to help to compare model performances and other stats in real time application:
 
 Note: all observations were done on MacBook Pro 2021 (no gpu support).
 
