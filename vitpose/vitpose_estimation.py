@@ -4,6 +4,7 @@ from PIL import Image
 from transformers import AutoProcessor, RTDetrForObjectDetection, VitPoseForPoseEstimation
 import cv2
 from vitpose_helper import *
+import time
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -17,6 +18,7 @@ keypoint_edges = model.config.edges
 
 cap = cv2.VideoCapture(0)
 
+prev_time = time.time()
 while cap.isOpened():
     ret, frame = cap.read()
 
@@ -33,6 +35,11 @@ while cap.isOpened():
             keypoints = np.array(pose_result["keypoints"])
             draw_points(frame, keypoints, scores, keypoint_colors, keypoint_score_threshold=0.3, radius=4, show_keypoint_weight=False)
             draw_links(frame, keypoints, scores, keypoint_edges, link_colors, keypoint_score_threshold=0.3, thickness=1, show_keypoint_weight=False)
+
+        curr_time = time.time()
+        fps = 1 / (curr_time - prev_time)
+        prev_time = curr_time
+        cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
         cv2.imshow("pose estimation", frame)
         if cv2.waitKey(10) & 0xFF == ord('q'):
