@@ -9,7 +9,7 @@ Make sure to also change your python interpreter
 
 Then download all necessary libraries:
 ```
-$ pip install -r requirements .txt
+$ pip install -r requirements.txt
 ```
 
 # Model Comparisons
