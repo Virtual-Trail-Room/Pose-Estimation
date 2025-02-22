@@ -17,12 +17,12 @@ All the models are great at rendering video frame by frame when provided the pre
 
 Note: all observations were done on MacBook Pro 2021 (no gpu support).
 
-| Model       | FPS         | Accuracy      | Comments |
-| :---        |    :----:   | :---:         | ---: | 
-| Mediapipie  | 15          | low - medium  |  |
-| Yolo        | 2-15        | medium - high | Versitile with multiple options |
-| OpenPose    | 7           | high          |  |
-| VitPose     | 2           | high          |  |
+| Model       | FPS         | Accuracy      | Num Landmarks | Comments  |
+| :---        |    :----:   | :---:         |   :---:       |---:       | 
+| Mediapipie  | 15          | low - medium  |  32           |           |
+| Yolo        | 2-15        | medium - high |  17           | Versitile with multiple options |
+| OpenPose    | 7           | high          |  17           |           |
+| VitPose     | 2           | high          |  17           |           |
 
 
 # [Openpose Light weight](https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch?tab=readme-ov-file )
